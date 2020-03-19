@@ -3,7 +3,8 @@ import { ScrollView, TextInput, StyleSheet, View, Text, Platform } from 'react-n
 
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import * as productActions from '../../store/actions/products';
 
 import HeaderButton from '../../components/UI/HeaderButton';
 
@@ -13,14 +14,21 @@ const EditProductScreen = (props) => {
 
     const editedProduct = useSelector(state => state.products.userProducts.find(prod => prod.id === prodId));
 
+    const dispatch = useDispatch();
+
     const [title, setTitle] = useState(editedProduct ? editedProduct.title : '');
     const [imageUrl, setImageUrl] = useState(editedProduct ? editedProduct.imageUrl : '');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState(editedProduct ? editedProduct.description : '');
 
     const submitHandler = useCallback(() => {
-        console.log('Submitting..');
-    }, []);
+        if (editedProduct) {
+            dispatch(productActions.updateProduct(prodId, title, description, imageUrl));
+        } else {
+            dispatch(productActions.createProduct(title, description, imageUrl, +price));
+        }
+        props.navigation.goBack();
+    }, [dispatch, prodId, title, description, imageUrl, price]);
 
     useEffect(() => {
         props.navigation.setParams({ submit: submitHandler });
@@ -31,21 +39,21 @@ const EditProductScreen = (props) => {
             <View style={styles.form}>
                 <View style={styles.formControl}>
                     <Text style={styles.label}>Title</Text>
-                    <TextInput style={styles.input} value={title} onChange={setTitle} />
+                    <TextInput style={styles.input} value={title} onChangeText={setTitle} />
                 </View>
                 <View style={styles.formControl}>
                     <Text style={styles.label}>Image Url</Text>
-                    <TextInput style={styles.input} value={imageUrl} onChange={setImageUrl} />
+                    <TextInput style={styles.input} value={imageUrl} onChangeText={setImageUrl} />
                 </View>
                 {
                     editedProduct ? null : (<View style={styles.formControl}>
                         <Text style={styles.label}>Price</Text>
-                        <TextInput style={styles.input} value={price} onChange={setPrice} />
+                        <TextInput style={styles.input} value={price} onChangeText={setPrice} />
                     </View>)
                 }
                 <View style={styles.formControl}>
                     <Text style={styles.label}>Description</Text>
-                    <TextInput style={styles.input} value={description} onChange={setDescription} />
+                    <TextInput style={styles.input} value={description} onChangeText={setDescription} />
                 </View>
             </View>
         </ScrollView>
