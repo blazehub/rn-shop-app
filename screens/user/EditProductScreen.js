@@ -25,7 +25,7 @@ const formReducer = (state, action) => {
             ...state.inputValidities,
             [action.input]: action.isValid
         };
-        debugger;
+
         let updatedFormIsValid = true;
 
         for (const key in updatedValidities) {
@@ -33,7 +33,6 @@ const formReducer = (state, action) => {
         }
 
         return {
-            ...state,
             formIsValid: updatedFormIsValid,
             inputValidities: updatedValidities,
             inputValues: updateValues
@@ -74,7 +73,8 @@ const EditProductScreen = (props) => {
             return;
         }
         if (editedProduct) {
-            dispatch(productActions.updateProduct(prodId,
+            dispatch(productActions.updateProduct(
+                prodId,
                 formState.inputValues.title,
                 formState.inputValues.description,
                 formState.inputValues.imageUrl));
