@@ -1,5 +1,8 @@
-import React from 'react'
-import { View, Button, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react'
+import {
+    View, Button, Text, StyleSheet, FlatList,
+    ActivityIndicator
+} from 'react-native';
 
 import CardItem from '../../components/shop/CartItem';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,6 +13,8 @@ import * as orderActions from '../../store/actions/order';
 import Card from '../../components/UI/Card';
 
 const CartScreen = (props) => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const cartTotalAmount = useSelector(state => state.cart.totalAmount);
     const cartItems = useSelector(state => {
         const transFormedCartItems = [];
@@ -27,6 +32,18 @@ const CartScreen = (props) => {
 
     const dispatch = useDispatch();
 
+    const sendOrderHandler = async () => {
+        setIsLoading(true);
+        await dispatch(orderActions.addOrder(cartItems, cartTotalAmount));
+        setIsLoading(false)
+    }
+
+    if (isLoading) {
+        return <View style={styles.centered}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+    }
+
     return (
         <View style={styles.screen}>
             <Card style={styles.summary}>
@@ -34,9 +51,7 @@ const CartScreen = (props) => {
                     Total: <Text style={styles.amount}>${cartTotalAmount.toFixed(2)}</Text>
                 </Text>
                 <Button title="Order Now" color={Colors.accent} disabled={cartItems.length === 0}
-                    onPress={() => {
-                        dispatch(orderActions.addOrder(cartItems, cartTotalAmount));
-                    }}></Button>
+                    onPress={sendOrderHandler}></Button>
             </Card>
             <FlatList data={cartItems}
                 keyExtractor={(item) => item.productId}
@@ -74,7 +89,8 @@ const styles = StyleSheet.create({
     },
     amount: {
         color: Colors.primary
-    }
+    },
+    centered: { flex: 1, justifyContent: 'center', alignItems: 'center' }
 });
 
 export default CartScreen;
