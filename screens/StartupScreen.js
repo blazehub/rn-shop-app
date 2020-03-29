@@ -31,8 +31,11 @@ const StartupScreen = (props) => {
             const expirationDate = new Date(expiryDate);
 
             if (expirationDate <= new Date() || !token || !userId) {
+
+                const expirationTime = expirationDate.getTime() - new Date().getTime()
+
                 props.navigation.navigate('Auth');
-                dispatch(authActions.authenticate(userId, token))
+                dispatch(authActions.authenticate(userId, token, expirationTime))
                 return;
             }
 
