@@ -71,12 +71,14 @@ export const createProduct = (title, description, imageUrl, price) => {
         const token = getState().auth.token;
         const userId = getState().auth.userId;
 
+        console.log('User Id---------', userId)
+
         const response = await fetch(`https://rn-learn-app.firebaseio.com/products.json?auth=${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, description, imageUrl, price })
+            body: JSON.stringify({ title, description, imageUrl, price, ownerId: userId })
         });
 
 
