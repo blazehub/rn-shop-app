@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import HeaderButton from '../../components/UI/HeaderButton';
 import OrderItem from '../../components/shop/OrderItem';
 
 import * as orderActions from '../../store/actions/order';
+import Colors from '../../constants/Colors';
 
 const OrdersScreen = (props) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -16,8 +17,11 @@ const OrdersScreen = (props) => {
     useEffect(() => {
         setIsLoading(true);
         const loadProducts = async () => {
-            await dispatch(orderActions.fetchOrders());
-            setIsLoading(false);
+            try {
+                await dispatch(orderActions.fetchOrders());
+            } finally {
+                setIsLoading(false);
+            }
         }
         loadProducts();
     }, [dispatch]);
